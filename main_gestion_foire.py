@@ -1,12 +1,5 @@
 import sys
 
-from model.room import Room
-from model.door import Door
-from model.roomModel import RoomModel
-from model.exponent import Exponent
-from model.table import Table
-from model.tableGroup import TableGroup
-
 from view.createRoomView import CreateRoomView
 from view.displayRoomView import DisplayRoomView
 
@@ -15,6 +8,7 @@ from view.displayDoorView import DisplayDoorView
 
 from view.displayTableGroupView import DisplayTableGroupView
 from view.createTableGroupView import CreateTableGroupView
+from view.fillRoomView import FillRoomView
 
 from view.displayTableView import DisplayTableView
 from view.createTableView import CreateTableView
@@ -22,9 +16,11 @@ from view.createTableView import CreateTableView
 from view.displayExponentView import DisplayExponentView
 from view.createExponentView import CreateExponentView
 
-from view.drawerView import DrawerView
+from view.drawer.drawerView import DrawerView
 
 from controller.appController import AppController
+
+from infrastructure.repositories.databaseRepository import DatabaseRepository
 
 import sys
 
@@ -35,25 +31,16 @@ from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 
-
-
 class MainWindow(QMainWindow, ):
-
-    appController = AppController()
-    doors = []
-    exponents = []
-    selectedExponent : Exponent
-    tableGroups = []
-    selectedTableGroup : TableGroup
-    tables = []
-    selectedTable : Table
-    rooms = []
-    selectedRoom : Room
+    databaseRepository = DatabaseRepository()
 
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Gestion foire")
+        
+        self.appController = AppController(self,self.databaseRepository)
+        self.appController.loadModel()
         
         button_action = QAction(QIcon("bug.png"), "&Créer salle", self)
         button_action.triggered.connect(self.displayCreateRoom)
@@ -99,6 +86,11 @@ class MainWindow(QMainWindow, ):
         button_action4.setStatusTip("")
         button_action4.triggered.connect(self.displayTables)
 
+        button_action4= QAction(QIcon("bug.png"), "&Remplir salle", self)
+        button_action4.setStatusTip("")
+        button_action4.triggered.connect(self.displayFillRoom)
+
+
         table_menu = menu.addMenu("&Tables")
         table_menu.addAction(button_action)
         table_menu.addAction(button_action2)
@@ -142,11 +134,12 @@ class MainWindow(QMainWindow, ):
         help_menu = menu.addMenu("&Aide")
         help_menu.addAction(button_action)
         help_menu.addAction(button_action2)
+        self.displayDrawer("view")
 
     def onMyToolBarButtonClick(self, s):
         print("click", s)
  
-    def displayCreateRoom(self, s):  
+    def displayCreateRoom(self):  
         widget = CreateRoomView(self.appController)
         self.setCentralWidget(widget)
 
@@ -181,6 +174,11 @@ class MainWindow(QMainWindow, ):
     def displayTables(self, s):
         widget = DisplayTableView(self.appController)
         self.setCentralWidget(widget)
+
+    def displayFillRoom(self, s):
+        widget = FillRoomView(self.appController)
+        self.setCentralWidget(widget)
+        
 
     def displayExponents(self, s):
         widget = DisplayExponentView(self.appController)

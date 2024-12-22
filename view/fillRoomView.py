@@ -5,17 +5,14 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 
 
-class CreateTableView(QWidget):
+class FillRoomView(QWidget):
 
     def __init__(self,appController):
         self.appController = appController
         super().__init__()
-        label = QLabel("Créer table")   
+        label = QLabel("Remplir salle de tables")   
         layout = QFormLayout()
         layout.addWidget(label)
-
-        self.name = QLineEdit()
-        layout.addRow("Nom:", self.name)
 
         comboboxRooms = []
         self.rooms = self.appController.getRooms()
@@ -35,14 +32,20 @@ class CreateTableView(QWidget):
         self.tableGroup.activated.connect(self.check_index_table_group)
         layout.addRow("Groupe de table:", self.tableGroup )
 
-        comboboxPositions = ['Vertical','Horizontal']
-        self.position = QComboBox()
-        self.position.addItems(comboboxPositions)
-        self.position.activated.connect(self.check_index_position)
-        layout.addRow("Orientation", self.position )
+        self.distanceFromTheWall = QLineEdit()
+        self.distanceFromTheWall.setValidator(QIntValidator(1, 999, self))
+        layout.addRow("Distance du mur:", self.distanceFromTheWall)
+        
+        self.numberOfAlleys = QLineEdit()
+        self.numberOfAlleys.setValidator(QIntValidator(1, 999, self))
+        layout.addRow("Nombre d'allées:", self.numberOfAlleys)
 
+        self.widthAlley = QLineEdit()
+        self.widthAlley.setValidator(QIntValidator(1, 999, self))
+        layout.addRow("Largeur des allées:", self.widthAlley)
+    
         bouton = QPushButton("Valider")
-        bouton.clicked.connect(self.validTable)
+        bouton.clicked.connect(self.fillRoom)
         layout.addWidget(bouton)
         self.setLayout(layout)
 
@@ -52,9 +55,5 @@ class CreateTableView(QWidget):
     def check_index_table_group(self, index):
         self.selectedTableGroup = self.tableGroups[index]
 
-
-    def check_index_position(self, index):
-        self.selectedPosition =  "Vertical" if index == 0 else "Horizontal"
-
-    def validTable(self):
-        self.appController.addTable(self.name.text(),self.selectedRoom,self.selectedTableGroup,self.selectedPosition) 
+    def fillRoom(self):
+        self.appController.fillRoom(self.selectedRoom,self.selectedTableGroup,self.distanceFromTheWall.text(),self.numberOfAlleys.text(),self.widthAlley.text())

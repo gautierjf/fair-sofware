@@ -1,44 +1,77 @@
 
-from model.room import Room
-from model.door import Door
-from model.exponent import Exponent
-from model.tableGroup import TableGroup
-from model.table import Table
+from model.objects.room import Room
+from model.objects.door import Door
+from model.objects.exponent import Exponent
+from model.objects.tableGroup import TableGroup
+from model.objects.table import Table
+from model.usecases.computeUsecase import ComputeUsecase
+
+from infrastructure.repositories.databaseRepository import DatabaseRepository
 
 class AppController:
-  def __init__(self):
+  def __init__(self,window,databaseRepository):
     self.rooms = []
     self.doors = []
     self.exponents = []
     self.tableGroups = []
     self.tables = []
+    self.window = window
+    self.databaseRepository = databaseRepository
 
   def addRoom(self,name,width,height):
-    self.rooms.append(Room(len(self.rooms)+1,name,int(width),int(height),0,0)) 
+    room = Room(len(self.rooms)+1,name,int(width),int(height),0,0)
+    self.databaseRepository.addRoom(room)
+    self.rooms.append(room)   
+    self.window.displayDrawer("controller")
 
+  def loadModel(self):
+    self.tables = self.databaseRepository.getTables()
+    self.rooms = self.databaseRepository.getRooms()
+    self.tableGroups = self.databaseRepository.getTableGroups()
+  
   def getRooms(self):
     return self.rooms
   
   def addDoor(self,name,room):
-    self.doors.append(Door(len(self.doors)+1,name,room,5,"Horizontal",0,0))        
+    self.doors.append(Door(len(self.doors)+1,name,room,5,"Horizontal",0,0))     
+    self.window.displayDrawer("controller")
 
   def getDoors(self):
     return self.doors
   
   def addTableGroup(self,tableWidth,tableLength,color):
-    self.tableGroups.append(TableGroup(len(self.tableGroups)+1,int(tableWidth),int(tableLength),color))   
+    tableGroup = TableGroup(len(self.tableGroups)+1,int(tableWidth),int(tableLength),color)
+    self.databaseRepository.addTableGroup(tableGroup)
+    self.tableGroups.append(tableGroup)   
+    self.window.displayDrawer("controller")
 
   def getTableGroups(self):
     return self.tableGroups
   
-  def addTable(self,name,room,tableGroup):
-    self.tables.append(Table(len(self.tables)+1,name,room,tableGroup,0,0,"Horizontal"))       
+  def addTable(self,name,room,tableGroup,position):
+    table = Table(len(self.tables)+1,name,room,tableGroup,10,10,position)
+    self.databaseRepository.addTable(table)
+    self.tables.append(table)       
+    self.window.displayDrawer("controller")
+    
+  def updatePositionTable(self,index,x,y):
+    table = self.tables[index];
+    table.x = x
+    table.y = y
+    self.databaseRepository.updateTable(table)
 
   def getTables(self):
     return self.tables
 
   def addExponent(self,firstName,lastName):
-    self.exponents.append(Exponent(len(self.exponents)+1,firstName,lastName))       
+    self.exponents.append(Exponent(len(self.exponents)+1,firstName,lastName))    
+    self.window.displayDrawer("controller")
        
   def getExponents(self):
     return self.exponents
+    
+  def fillRoom(self,room,tableGroup,distanceFromTheWall,numberOfAlleys,widthAlley):
+    usecase = ComputeUsecase(room,tableGroup,int(distanceFromTheWall),int(numberOfAlleys),int(widthAlley))
+    tables = usecase.execute()
+    self.tables = tables    
+    self.window.displayDrawer("controller")

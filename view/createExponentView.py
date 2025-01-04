@@ -17,10 +17,18 @@ class CreateExponentView(QWidget):
         layout.addRow("Prénom:", self.firstName )
         self.lastName = QLineEdit()
         layout.addRow("Nom:", self.lastName )
-        bouton = QPushButton("Valider")
-        bouton.clicked.connect(self.validExponent)
-        layout.addWidget(bouton)
+
+        cancelButton = QPushButton("Annuler")
+        cancelButton.clicked.connect(self.close)
+        validButton = QPushButton("Valider")
+        validButton.clicked.connect(self.validExponent)
+        layout.addRow(cancelButton, validButton)
+
+
         self.setLayout(layout)
     
     def validExponent(self):
         self.appController.addExponent(self.firstName.text(),self.lastName.text())
+
+    def close(self):
+        self.appController.goBack()

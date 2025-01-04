@@ -41,10 +41,14 @@ class CreateTableView(QWidget):
         self.position.activated.connect(self.check_index_position)
         layout.addRow("Orientation", self.position )
 
-        bouton = QPushButton("Valider")
-        bouton.clicked.connect(self.validTable)
-        layout.addWidget(bouton)
+
+        cancelButton = QPushButton("Annuler")
+        cancelButton.clicked.connect(self.close)
+        validButton = QPushButton("Valider")
+        validButton.clicked.connect(self.validTable)
+        layout.addRow(cancelButton, validButton)
         self.setLayout(layout)
+
 
     def check_index_table_room(self, index):
         self.selectedRoom = self.rooms[index]
@@ -58,3 +62,6 @@ class CreateTableView(QWidget):
 
     def validTable(self):
         self.appController.addTable(self.name.text(),self.selectedRoom,self.selectedTableGroup,self.selectedPosition) 
+
+    def close(self):
+        self.appController.goBack()

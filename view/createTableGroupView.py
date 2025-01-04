@@ -21,10 +21,16 @@ class CreateTableGroupView(QWidget):
         self.tableLength.setValidator(QIntValidator(1, 999, self))
         self.color = QLineEdit()
         layout.addRow("Couleur:", self.color )
-        bouton = QPushButton("Valider")
-        bouton.clicked.connect(self.validGroupTable)
-        layout.addWidget(bouton)
+
+        cancelButton = QPushButton("Annuler")
+        cancelButton.clicked.connect(self.close)
+        validButton = QPushButton("Valider")
+        validButton.clicked.connect(self.validGroupTable)
+        layout.addRow(cancelButton, validButton)
         self.setLayout(layout)
     
     def validGroupTable(self):
         self.appController.addTableGroup(self.tableWidth.text(),self.tableLength.text() ,self.color.text())
+
+    def close(self):
+        self.appController.goBack()

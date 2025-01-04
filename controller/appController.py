@@ -8,6 +8,8 @@ from model.usecases.computeUsecase import ComputeUsecase
 
 from infrastructure.repositories.databaseRepository import DatabaseRepository
 
+import csv
+
 class AppController:
   def __init__(self,window,databaseRepository):
     self.rooms = []
@@ -28,6 +30,7 @@ class AppController:
     self.tables = self.databaseRepository.getTables()
     self.rooms = self.databaseRepository.getRooms()
     self.tableGroups = self.databaseRepository.getTableGroups()
+    self.exponents = self.databaseRepository.getExponents()
   
   def getRooms(self):
     return self.rooms
@@ -64,14 +67,39 @@ class AppController:
     return self.tables
 
   def addExponent(self,firstName,lastName):
-    self.exponents.append(Exponent(len(self.exponents)+1,firstName,lastName))    
+    exponent = Exponent(len(self.exponents)+1,firstName,lastName)
+    self.exponents.append(Exponent(len(self.exponents)+1,firstName,lastName))  
+    self.databaseRepository.addExponent(exponent)  
     self.window.displayDrawer("controller")
        
   def getExponents(self):
     return self.exponents
+  
+         
+  def importExponents(self,filename):
+    importedExponents = []
+    with open(filename,'r',encoding="utf8") as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=';')
+        line_count = 0
+        for row in csv_reader:
+            if line_count == 0:
+                print(f'Column names are {", ".join(row)}')
+                line_count += 1
+            else:
+                importedExponents.append(Exponent(len(importedExponents)+1,row[3],row[4]))
+                print(f'\t{row[3]} {row[4]} ')
+                line_count += 1
+        print(f'Processed {line_count} lines.')
+    csv_file.close()
+    for exponent in importedExponents:
+      self.databaseRepository.addExponent(exponent)  
+      self.exponents.append(exponent)
     
   def fillRoom(self,room,tableGroup,distanceFromTheWall,numberOfAlleys,widthAlley):
     usecase = ComputeUsecase(room,tableGroup,int(distanceFromTheWall),int(numberOfAlleys),int(widthAlley))
     tables = usecase.execute()
     self.tables = tables    
+    self.window.displayDrawer("controller")
+
+  def goBack(self):
     self.window.displayDrawer("controller")

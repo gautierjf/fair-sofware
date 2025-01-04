@@ -17,6 +17,7 @@ from view.displayExponentView import DisplayExponentView
 from view.createExponentView import CreateExponentView
 
 from view.drawer.drawerView import DrawerView
+from view.importFileView import ImportFileView
 
 from controller.appController import AppController
 
@@ -24,7 +25,6 @@ from infrastructure.repositories.databaseRepository import DatabaseRepository
 
 import sys
 
-from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
@@ -189,8 +189,8 @@ class MainWindow(QMainWindow, ):
         self.setCentralWidget(widget)
 
     def displayImportExponents(self, s):
-        label = QLabel("Import exponents")
-        self.setCentralWidget(label)       
+        widget = ImportFileView(self.appController)
+        self.setCentralWidget(widget)
 
     def displayExportExponents(self, s):
         label = QLabel("Export exponents")

@@ -21,10 +21,17 @@ class CreateRoomView(QWidget):
         self.height = QLineEdit()
         self.height.setValidator(QIntValidator(1, 999, self))
         layout.addRow("Longueur:", self.height)
-        bouton = QPushButton("Valider")
-        bouton.clicked.connect(self.validRoom)
-        layout.addWidget(bouton)
+
+        cancelButton = QPushButton("Annuler")
+        cancelButton.clicked.connect(self.close)
+        validButton = QPushButton("Valider")
+        validButton.clicked.connect(self.validRoom)
+        layout.addRow(cancelButton, validButton)
+
         self.setLayout(layout)
     
     def validRoom(self):
         self.appController.addRoom(self.name.text(),self.width.text(),self.height.text())
+        
+    def close(self):
+        self.appController.goBack()

@@ -7,17 +7,19 @@ from sqlalchemy.ext.declarative import declarative_base
 from infrastructure.entities.tableEntity import TableEntity
 from infrastructure.entities.tableGroupEntity import TableGroupEntity
 from infrastructure.entities.roomEntity import RoomEntity
+from infrastructure.entities.exponentEntity import ExponentEntity
 
 
 from model.objects.table import Table
 from model.objects.tableGroup import TableGroup
 from model.objects.room import Room
+from model.objects.exponent import Exponent
 
 from infrastructure.entities.base import Base
 
 class DatabaseRepository:
   def __init__(self):
-    engine = create_engine("sqlite:///gestionfoire.db")
+    engine = create_engine("sqlite:///fairsoftware.db")
     Base.metadata.create_all(engine)
     self.session = Session(engine)
 
@@ -34,6 +36,21 @@ class DatabaseRepository:
       tables.append(table)
     return tables
 
+  def getExponents(self):
+    exponentEntities = self.session.query(ExponentEntity).all()
+    exponents = []
+    for i in range(0,len(exponentEntities),1):
+      exponentEntity = exponentEntities[i]
+      exponent = Exponent(exponentEntity.id,exponentEntity.firstname,exponentEntity.lastname)
+      exponents.append(exponent)
+    return exponents
+  
+  def addExponent(self,exponent):
+    exponentEntity = ExponentEntity(exponent.firstname,exponent.lastname)
+    self.session.add(exponentEntity)
+    self.session.commit()
+
+  
   def addTable(self,table):
     tableEntity = TableEntity(table.name,table.x,table.y,table.position)
     tableGroupEntity = self.session.query(TableGroupEntity).filter_by(id=table.tableGroup.id).one()

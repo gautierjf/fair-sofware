@@ -26,7 +26,6 @@ class Viewport(QGraphicsView):
                 height = tables[i].tableGroup.width*self.multiplicateur
             new_x = tables[i].x
             new_y = tables[i].y
-            print("Table ["+str(new_x)+","+str(new_y)+"] ["+str(width)+","+str(height)+"]")
             item = TableView(new_x, new_y, width, height,i,self.appController)
             scene.addItem(item)
         rooms = self.appController.getRooms()

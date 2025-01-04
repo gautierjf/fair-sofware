@@ -26,13 +26,21 @@ class CreateDoorView(QWidget):
         self.room.activated.connect(self.check_index_door)
         layout.addRow("Salle:", self.room )
 
-        bouton = QPushButton("Valider")
-        bouton.clicked.connect(self.validDoor)
-        layout.addWidget(bouton)
+
+        cancelButton = QPushButton("Annuler")
+        cancelButton.clicked.connect(self.close)
+        validButton = QPushButton("Valider")
+        validButton.clicked.connect(self.validDoor)
+        layout.addRow(cancelButton, validButton)
+
         self.setLayout(layout)
+    
 
     def check_index_door(self, index):
         self.selectedRoom = self.rooms[index]
 
     def validDoor(self):
         self.appController.addDoor(self.name.text(),self.selectedRoom)
+
+    def close(self):
+        self.appController.goBack()
